@@ -18,18 +18,16 @@ body {
     background: var(--bg);
     color: var(--fg);
 }
-@media (prefers-color-scheme: dark) {
-    html {
-        --hover: rgba(255, 255, 255, .03);
-        --active: rgba(255, 255, 255, .05);
-        --border: rgba(255, 255, 255, .15);
-        --bg: var(--dark-bg);
-        --fg: var(--dark-fg);
-    }
-    .invert foliate-view::part(filter) {
-        color-scheme: light; /* required to make the iframe bg transparent */
-        filter: invert(1) hue-rotate(180deg);
-    }
+html.is-dark {
+    --hover: rgba(255, 255, 255, .03);
+    --active: rgba(255, 255, 255, .05);
+    --border: rgba(255, 255, 255, .15);
+    --bg: var(--dark-bg);
+    --fg: var(--dark-fg);
+}
+html.is-dark .invert foliate-view::part(filter) {
+    color-scheme: light; /* required to make the iframe bg transparent */
+    filter: invert(1) hue-rotate(180deg);
 }
 foliate-view::part(head), foliate-view::part(foot) {
     font: menu;
@@ -38,10 +36,8 @@ foliate-view::part(head), foliate-view::part(foot) {
 foliate-view {
     --overlayer-highlight-blend-mode: multiply;
 }
-@media (prefers-color-scheme: dark) {
-    foliate-view {
-        --overlayer-highlight-blend-mode: screen;
-    }
+html.is-dark foliate-view {
+    --overlayer-highlight-blend-mode: screen;
 }
 #ribbon {
     visibility: hidden;

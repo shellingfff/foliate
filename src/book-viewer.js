@@ -277,6 +277,9 @@ GObject.registerClass({
         this.viewSettings.connectAll(applyStyle)
         this.fontSettings.connectAll(applyStyle)
         this.connect('book-ready', applyStyle)
+        const styleManager = Adw.StyleManager.get_default()
+        const styleHandler = styleManager.connect('notify::dark', applyStyle)
+        this.connect('destroy', () => styleManager.disconnect(styleHandler))
 
         this.#webView.connect('notify::zoom-level', webView => {
             const z = webView.zoom_level
@@ -326,6 +329,7 @@ GObject.registerClass({
                 animated: view.animated,
             },
             style: {
+                dark: Adw.StyleManager.get_default().dark,
                 lineHeight: view.line_height,
                 justify: view.justify,
                 hyphenate: view.hyphenate,

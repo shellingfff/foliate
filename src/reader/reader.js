@@ -50,7 +50,7 @@ const getHTML = async range => {
 
 const getCSS = ({
     lineHeight, justify, hyphenate, invert, theme, overrideFont, userStylesheet,
-    mediaActiveClass,
+    mediaActiveClass, dark,
 }) => [`
     @namespace epub "http://www.idpf.org/2007/ops";
     @media print {
@@ -62,7 +62,7 @@ const getCSS = ({
     }
     @media screen {
         html {
-            color-scheme: ${invert ? 'only light' : 'light dark'};
+            color-scheme: only ${dark && !invert ? 'dark' : 'light'};
             color: ${theme.light.fg};
         }
         a:any-link {
@@ -75,7 +75,7 @@ const getCSS = ({
                 text-decoration-color: unset;
             }
         }
-        @media (prefers-color-scheme: dark) {
+        @media ${dark ? 'screen' : 'not all'} {
             html {
                 color: ${invert ? theme.inverted.fg : theme.dark.fg};
                 ${invert ? '-webkit-font-smoothing: antialiased;' : ''}
@@ -110,7 +110,7 @@ const getCSS = ({
         tab-size: 2;
     }
 `, `
-    @media screen and (prefers-color-scheme: light) {
+    @media ${dark ? 'not all' : 'screen'} {
         ${theme.light.bg !== '#ffffff' ? `
         html, body {
             color: ${theme.light.fg} !important;
@@ -134,7 +134,7 @@ const getCSS = ({
             background: color-mix(in hsl, ${theme.light.fg}, ${theme.light.bg} 85%) !important;
         }` : ''}
     }
-    @media screen and (prefers-color-scheme: dark) {
+    @media ${dark ? 'screen' : 'not all'} {
         ${invert ? '' : `
         html, body {
             color: ${theme.dark.fg} !important;
@@ -286,6 +286,9 @@ class Reader {
         Object.assign(this.style, style)
         const { theme } = style
         const $style = document.documentElement.style
+        // WebKit's system preference can differ from the app's selected style.
+        document.documentElement.classList.toggle('is-dark', this.style.dark)
+        $style.colorScheme = this.style.dark ? 'only dark' : 'only light'
         $style.setProperty('--light-bg', theme.light.bg)
         $style.setProperty('--light-fg', theme.light.fg)
         $style.setProperty('--dark-bg', theme.dark.bg)
