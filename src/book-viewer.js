@@ -367,7 +367,9 @@ GObject.registerClass({
         this.add_overlay(popover)
         popover.connect('closed', () => utils.wait(0).then(() => {
             this.remove_overlay(popover)
-            this.deselect()
+            // Popovers also close when switching to another application.
+            // Keep the selection when the reader window loses focus.
+            if (this.root?.is_active) this.deselect()
         }))
         popover.position = dir === 'up' ? Gtk.PositionType.TOP : Gtk.PositionType.BOTTOM
         popover.pointing_to = this.getRect(point)
